@@ -57,7 +57,7 @@ void servoMotor_Init(ServoMotorNumber_t motorNum, ServoMotorModel_t motorModel)
 	if( (motorNum   < SERVO_MOTOR_NUM_MAX ) &&
 		(motorModel < SERVO_MODELS_NUM_MAX) )
 	{
-		/* Servo Motor config */
+		/* Copy the selected servo model config into the selected servo motor config */
 		(void) memcpy((void*)&m_ServoConfig[motorNum],
 			          (void*)&KT_ServoModelsConfig[motorModel],
 					  sizeof(m_ServoConfig[motorNum]));
