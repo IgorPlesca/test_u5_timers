@@ -24,7 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "servoMotor.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,36 +91,44 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ICACHE_Init();
-  MX_TIM3_Init();
-  MX_TIM4_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  PwmChannel_t pwmChannel1 = {TIMER_3, TIMER_CH2};
-  PwmChannel_t pwmChannel2 = {TIMER_4, TIMER_CH2};
-  float dutyCycle = 0.0f;
-  tim_PwmChannelConfig(pwmChannel1, 1U, 0.1f);
-  tim_PwmChannelConfig(pwmChannel2, 1U, 0.1f);
+  ServoMotorConfig_t config;
+
+  config.pwmFreqHz      =   50uL;
+  config.pwmPulseUsAcc  =    1uL;
+  config.pwmPulseUsMin  =  500uL;
+  config.pwmPulseUsMax  = 2500uL;
+  config.angleDegreeMin =   0.0f;
+  config.angleDegreeMax = 140.0f;
+
+  /* Config Servo Motor 1 */
+  servoMotor_Init(SERVO_MOTOR_1, &config);
+
+  /* Config Servo Motor 2 */
+  //servoMotor_Init(SERVO_MOTOR_2, &config);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  float angleDegrees = config.angleDegreeMin;
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  tim_PwmChannelSetDutyCycle(pwmChannel1, dutyCycle);
-	  tim_PwmChannelSetDutyCycle(pwmChannel2, dutyCycle);
-	  HAL_Delay(1000U);
+	  servoMotor_SetAngle(SERVO_MOTOR_1, angleDegrees);
+	  //servoMotor_SetAngle(SERVO_MOTOR_2, angleDegrees);
+	  HAL_Delay(1000u);
 
-	  if(dutyCycle + 10.0f > 100.0f)
+	  if(angleDegrees + 10.0f > config.angleDegreeMax)
 	  {
-		  dutyCycle = 0.0f;
+		  angleDegrees = config.angleDegreeMin;
 	  }
 	  else
 	  {
-		  dutyCycle += 10.0f;
+		  angleDegrees += 10.0f;
 	  }
-
   }
   /* USER CODE END 3 */
 }

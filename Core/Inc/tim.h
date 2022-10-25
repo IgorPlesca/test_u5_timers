@@ -32,9 +32,7 @@ extern "C" {
 
 /* USER CODE END Includes */
 
-extern TIM_HandleTypeDef htim3;
-
-extern TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN Private defines */
 typedef enum Timer_e
@@ -67,14 +65,13 @@ typedef struct PwmChannel_s
 
 /* USER CODE END Private defines */
 
-void MX_TIM3_Init(void);
-void MX_TIM4_Init(void);
+void MX_TIM2_Init(void);
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* USER CODE BEGIN Prototypes */
-void tim_PwmChannelConfig      (PwmChannel_t pwmChannel, uint32_t pwmFreqHz, float pwmDutyCyclePercPrecision);
-void tim_PwmChannelSetDutyCycle(PwmChannel_t pwmChannel, float dutyCycle);
+void tim_PwmChannelConfig              (PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsAcc);
+void tim_PwmChannelSetPulseMicroseconds(PwmChannel_t *pwmChannel, uint32_t pwmPulseUs);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
