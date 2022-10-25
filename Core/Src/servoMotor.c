@@ -45,7 +45,7 @@ static bool               m_ServoConfigStatus[SERVO_MOTOR_NUM_MAX] = {false};
 /* PWM configuration for relative motors */
 static const PwmChannel_t m_PwmChannelConfig[SERVO_MOTOR_NUM_MAX] =
 {
-		{TIMER_1, TIM_CHANNEL_1}, /* Servo Motor 1 */
+		{TIMER_1, TIM_CHANNEL_1}, /* PWM Channel for Servo Motor 1 */
 };
 
 /**
