@@ -70,7 +70,7 @@ void MX_TIM1_Init(void);
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* USER CODE BEGIN Prototypes */
-void tim_PwmChannelConfig              (const PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsAcc);
+void tim_PwmChannelConfig              (const PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision);
 void tim_PwmChannelSetPulseMicroseconds(const PwmChannel_t *pwmChannel, uint32_t pwmPulseUs);
 /* USER CODE END Prototypes */
 

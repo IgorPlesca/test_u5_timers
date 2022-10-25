@@ -14,12 +14,12 @@
 /* Configuration of a servo motor */
 typedef struct ServoMotorConfig_s
 {
-	uint32_t pwmFreqHz;       /* PWM frequency for driving motor (in Hz)      */
-	uint32_t pwmPulseUsAcc;   /* PWM pulse duration accuracy     (in us)      */
-	uint32_t pwmPulseUsMin;   /* PWM pulse minimum duration      (in us)      */
-	uint32_t pwmPulseUsMax;   /* PWM pulse maximum duration      (in us)      */
-	uint16_t angleDegreeMin;  /* Minimum shaft angle             (in degrees) */
-	uint16_t angleDegreeMax;  /* Maximum shaft angle             (in degrees) */
+	uint32_t pwmFreqHz;             /* PWM frequency for driving motor (in Hz)      */
+	uint32_t pwmPulseUsPrecision;   /* PWM pulse duration precision    (in us)      */
+	uint32_t pwmPulseUsMin;         /* PWM pulse minimum duration      (in us)      */
+	uint32_t pwmPulseUsMax;         /* PWM pulse maximum duration      (in us)      */
+	uint16_t angleDegreeMin;        /* Minimum shaft angle             (in degrees) */
+	uint16_t angleDegreeMax;        /* Maximum shaft angle             (in degrees) */
 } ServoMotorConfig_t;
 
 /* Servo Motor models configurations */
@@ -27,12 +27,12 @@ static const ServoMotorConfig_t KT_ServoModelsConfig[SERVO_MODELS_NUM_MAX] =
 {
 		/* Servo Motor DM996 */
 		{
-				.pwmFreqHz      =   50uL, /* 20ms PWM period duration      ->   50 Hz */
-				.pwmPulseUsAcc  =    1uL, /* to be investigated                       */
-				.pwmPulseUsMin  =  500uL, /* 0.5ms of minimum pulse length ->  500 us */
-				.pwmPulseUsMax  = 2500uL, /* 2.5ms of maximum pulse length -> 2500 us */
-				.angleDegreeMin =     0u, /*   0 degrees of minimum shaft angle       */
-				.angleDegreeMax =   180u, /* 180 degrees of maximum shaft angle       */
+				.pwmFreqHz           =   50uL, /* 20ms PWM period duration      ->   50 Hz */
+				.pwmPulseUsPrecision =    1uL, /* to be investigated                       */
+				.pwmPulseUsMin       =  500uL, /* 0.5ms of minimum pulse length ->  500 us */
+				.pwmPulseUsMax       = 2500uL, /* 2.5ms of maximum pulse length -> 2500 us */
+				.angleDegreeMin      =     0u, /*   0 degrees of minimum shaft angle       */
+				.angleDegreeMax      =   180u, /* 180 degrees of maximum shaft angle       */
 		},
 };
 
@@ -65,7 +65,7 @@ void servoMotor_Init(ServoMotorNumber_t motorNum, ServoMotorModel_t motorModel)
 		/* Timer PWM configuration */
 		tim_PwmChannelConfig(&m_PwmChannelConfig[motorNum],
 				              m_ServoConfig[motorNum].pwmFreqHz,
-				              m_ServoConfig[motorNum].pwmPulseUsAcc);
+				              m_ServoConfig[motorNum].pwmPulseUsPrecision);
 
 		/* Servo/PWM Config end */
 		m_ServoConfigStatus[motorNum] = true;

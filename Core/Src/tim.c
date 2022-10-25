@@ -190,7 +190,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
-void tim_PwmChannelConfig(const PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsAcc)
+void tim_PwmChannelConfig(const PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision)
 {
 	TIM_HandleTypeDef 		*pTimHandler;
 	uint32_t           		timChannel;
@@ -211,7 +211,7 @@ void tim_PwmChannelConfig(const PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, ui
 	timChannel  = KT_TimerChannels[pwmChannel->timerChannel];
 
 	timerBusClock = tim_GetTimerBusClock();
-	timerClock    = 1000000uL     / pwmPulseUsAcc;
+	timerClock    = 1000000uL     / pwmPulseUsPrecision;
 	prescaler     = timerBusClock / timerClock;
 	counterPeriod = timerClock    / pwmFreqHz;
 
