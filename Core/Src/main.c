@@ -72,8 +72,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-
-	HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -93,10 +92,13 @@ int main(void)
   MX_GPIO_Init();
   MX_ICACHE_Init();
   MX_TIM3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-  PwmChannel_t pwmChannel = {TIMER_3, TIMER_CH2};
+  PwmChannel_t pwmChannel1 = {TIMER_3, TIMER_CH2};
+  PwmChannel_t pwmChannel2 = {TIMER_4, TIMER_CH2};
   float dutyCycle = 0.0f;
-  tim_PwmChannelConfig(pwmChannel, 1U, 0.1f);
+  tim_PwmChannelConfig(pwmChannel1, 1U, 0.1f);
+  tim_PwmChannelConfig(pwmChannel2, 1U, 0.1f);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -106,7 +108,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  tim_PwmChannelSetDutyCycle(pwmChannel, dutyCycle);
+	  tim_PwmChannelSetDutyCycle(pwmChannel1, dutyCycle);
+	  tim_PwmChannelSetDutyCycle(pwmChannel2, dutyCycle);
 	  HAL_Delay(1000U);
 
 	  if(dutyCycle + 10.0f > 100.0f)
