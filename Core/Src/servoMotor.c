@@ -12,7 +12,7 @@ static ServoMotorConfig_t m_ServoConfig[SERVO_MOTOR_NUM_MAX] = {0};
 static bool               m_ServoConfigStatus[SERVO_MOTOR_NUM_MAX] = {false};
 static PwmChannel_t       m_PwmChannelConfig[SERVO_MOTOR_NUM_MAX] =
 {
-		{TIMER_2, TIM_CHANNEL_4}, /* Servo Motor 1 */
+		{TIMER_1, TIM_CHANNEL_1}, /* Servo Motor 1 */
 };
 
 void servoMotor_Init(ServoMotor_t motor, ServoMotorConfig_t *servoConfig)

@@ -91,7 +91,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ICACHE_Init();
-  MX_TIM2_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   ServoMotorConfig_t config;
 
@@ -104,9 +104,6 @@ int main(void)
 
   /* Config Servo Motor 1 */
   servoMotor_Init(SERVO_MOTOR_1, &config);
-
-  /* Config Servo Motor 2 */
-  //servoMotor_Init(SERVO_MOTOR_2, &config);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -118,7 +115,6 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  servoMotor_SetAngle(SERVO_MOTOR_1, angleDegrees);
-	  //servoMotor_SetAngle(SERVO_MOTOR_2, angleDegrees);
 	  HAL_Delay(1000u);
 
 	  if(angleDegrees + 10.0f > config.angleDegreeMax)
