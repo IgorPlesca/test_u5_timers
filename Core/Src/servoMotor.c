@@ -73,16 +73,17 @@ void servoMotor_SetAngle(ServoMotorNumber_t motor, float angleDegrees)
 		PwmChannel_t	   *pwmChannel  = &m_PwmChannelConfig[motor];
 
 		/* Check if the selected angle is between the acceptable limits */
-		if( ( angleDegrees >= servoConfig->angleDegreeMin) &&
-			( angleDegrees <= servoConfig->angleDegreeMax) )
+		if( ( angleDegrees >= (float) servoConfig->angleDegreeMin) &&
+			( angleDegrees <= (float) servoConfig->angleDegreeMax) )
 		{
 			/* Compute the total shaft angle and PWM pulse duration intervals */
 			uint16_t totalAngle   = servoConfig->angleDegreeMax - servoConfig->angleDegreeMin;
 			uint32_t totalPulseUs = servoConfig->pwmPulseUsMax  - servoConfig->pwmPulseUsMin;
 
-			/* Translate shaft angle in PWM pulse duration */
-			uint32_t pwmPulseUs = servoConfig->pwmPulseUsMin +                    /* Minimum pulse duration + */
-					              ( (angleDegrees * totalPulseUs) / totalAngle ); /* Angle related pulse duration */
+			/* Translate shaft angle in PWM pulse duration:
+			 *    Minimum pulse duration + Angle related pulse duration */
+			uint32_t pwmPulseUs = servoConfig->pwmPulseUsMin +
+								  (uint32_t)( (angleDegrees * totalPulseUs) / totalAngle );
 
 			/* Set the PWM pulse duration to the relative motor PWM channel */
 			tim_PwmChannelSetPulseMicroseconds(pwmChannel, pwmPulseUs);
