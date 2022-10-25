@@ -6,8 +6,21 @@
  */
 
 #include <servoMotor.h>
+#include "tim.h"
 #include <string.h>
 #include <stdbool.h>
+
+
+/* Configuration of a servo motor */
+typedef struct ServoMotorConfig_s
+{
+	uint32_t pwmFreqHz;       /* PWM frequency for driving motor (in Hz)      */
+	uint32_t pwmPulseUsAcc;   /* PWM pulse duration accuracy     (in us)      */
+	uint32_t pwmPulseUsMin;   /* PWM pulse minimum duration      (in us)      */
+	uint32_t pwmPulseUsMax;   /* PWM pulse maximum duration      (in us)      */
+	uint16_t angleDegreeMin;  /* Minimum shaft angle             (in degrees) */
+	uint16_t angleDegreeMax;  /* Maximum shaft angle             (in degrees) */
+} ServoMotorConfig_t;
 
 /* Servo Motor models configurations */
 static const ServoMotorConfig_t KT_ServoModelsConfig[SERVO_MODELS_NUM_MAX] =
