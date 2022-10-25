@@ -93,22 +93,13 @@ int main(void)
   MX_ICACHE_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-  ServoMotorConfig_t config;
-
-  config.pwmFreqHz      =   50uL;
-  config.pwmPulseUsAcc  =    1uL;
-  config.pwmPulseUsMin  =  500uL;
-  config.pwmPulseUsMax  = 2500uL;
-  config.angleDegreeMin =   0.0f;
-  config.angleDegreeMax = 140.0f;
-
   /* Config Servo Motor 1 */
-  servoMotor_Init(SERVO_MOTOR_1, &config);
+  servoMotor_Init(SERVO_MOTOR_1, SERVO_MODEL_DM996);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  float angleDegrees = config.angleDegreeMin;
+  float angleDegrees = 0.0f;
   while (1)
   {
     /* USER CODE END WHILE */
@@ -117,9 +108,9 @@ int main(void)
 	  servoMotor_SetAngle(SERVO_MOTOR_1, angleDegrees);
 	  HAL_Delay(1000u);
 
-	  if(angleDegrees + 10.0f > config.angleDegreeMax)
+	  if(angleDegrees + 10.0f > 120.0f)
 	  {
-		  angleDegrees = config.angleDegreeMin;
+		  angleDegrees = 0.0f;
 	  }
 	  else
 	  {
