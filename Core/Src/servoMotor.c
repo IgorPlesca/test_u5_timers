@@ -8,8 +8,8 @@
 #include <servoMotor.h>
 #include "tim.h"
 #include <string.h>
+#include <stdint.h>
 #include <stdbool.h>
-
 
 /* Configuration of a servo motor */
 typedef struct ServoMotorConfig_s
@@ -31,8 +31,8 @@ static const ServoMotorConfig_t KT_ServoModelsConfig[SERVO_MODELS_NUM_MAX] =
 				.pwmPulseUsAcc  =    1uL, /* to be investigated                       */
 				.pwmPulseUsMin  =  500uL, /* 0.5ms of minimum pulse length ->  500 us */
 				.pwmPulseUsMax  = 2500uL, /* 2.5ms of maximum pulse length -> 2500 us */
-				.angleDegreeMin =     0u, /*   0 degrees of minimum angle             */
-				.angleDegreeMax =   180u, /* 180 degrees of maximum angle             */
+				.angleDegreeMin =     0u, /*   0 degrees of minimum shaft angle       */
+				.angleDegreeMax =   180u, /* 180 degrees of maximum shaft angle       */
 		},
 };
 
@@ -43,7 +43,7 @@ static ServoMotorConfig_t m_ServoConfig[SERVO_MOTOR_NUM_MAX] = {0};
 static bool               m_ServoConfigStatus[SERVO_MOTOR_NUM_MAX] = {false};
 
 /* PWM configuration for relative motors */
-static PwmChannel_t       m_PwmChannelConfig[SERVO_MOTOR_NUM_MAX] =
+static const PwmChannel_t m_PwmChannelConfig[SERVO_MOTOR_NUM_MAX] =
 {
 		{TIMER_1, TIM_CHANNEL_1}, /* Servo Motor 1 */
 };
@@ -83,7 +83,7 @@ void servoMotor_SetAngle(ServoMotorNumber_t motor, float angleDegrees)
 	{
 		/* Select servo motor and it's relative PWM channel configurations */
 		ServoMotorConfig_t *servoConfig = &m_ServoConfig[motor];
-		PwmChannel_t	   *pwmChannel  = &m_PwmChannelConfig[motor];
+		const PwmChannel_t *pwmChannel  = &m_PwmChannelConfig[motor];
 
 		/* Check if the selected angle is between the acceptable limits */
 		if( ( angleDegrees >= (float) servoConfig->angleDegreeMin) &&

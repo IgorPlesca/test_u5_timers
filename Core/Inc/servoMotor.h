@@ -8,8 +8,6 @@
 #ifndef INC_SERVOMOTOR_H_
 #define INC_SERVOMOTOR_H_
 
-#include <stdint.h>
-
 /* List of the accepted servo motor models */
 typedef enum ServoMotorModel_e
 {

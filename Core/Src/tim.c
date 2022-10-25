@@ -190,7 +190,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
-void tim_PwmChannelConfig(PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsAcc)
+void tim_PwmChannelConfig(const PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsAcc)
 {
 	TIM_HandleTypeDef 		*pTimHandler;
 	uint32_t           		timChannel;
@@ -247,7 +247,7 @@ void tim_PwmChannelConfig(PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, uint32_t
 
 }
 
-void tim_PwmChannelSetPulseMicroseconds(PwmChannel_t *pwmChannel, uint32_t pwmPulseUs)
+void tim_PwmChannelSetPulseMicroseconds(const PwmChannel_t *pwmChannel, uint32_t pwmPulseUs)
 {
 	TIM_HandleTypeDef	*pTimHandler;
 	uint32_t         	timChannel;
