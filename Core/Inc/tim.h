@@ -35,6 +35,7 @@ extern "C" {
 extern TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN Private defines */
+/* Timer definitions */
 typedef enum Timer_e
 {
 	TIMER_1 = 0x00U,
@@ -48,6 +49,7 @@ typedef enum Timer_e
 	TIMER_NUM_MAX,
 } Timer_t;
 
+/* Timer channel configuration */
 typedef enum TimerChannel_e
 {
 	TIMER_CH1 = 0x00U,
@@ -57,6 +59,7 @@ typedef enum TimerChannel_e
 	TIMER_CH_NUM_MAX,
 } TimerChannel_t;
 
+/* PWM channel definition */
 typedef struct PwmChannel_s
 {
 	Timer_t 	   timer;
@@ -70,8 +73,15 @@ void MX_TIM1_Init(void);
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 
 /* USER CODE BEGIN Prototypes */
-void tim_PwmChannelConfig              (const PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision);
-void tim_PwmChannelSetPulseMicroseconds(const PwmChannel_t *pwmChannel, uint32_t pwmPulseUs);
+/*
+ * Config the Timer Channel as PWM
+ */
+void tim_PwmChannelConfig(const PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision);
+
+/*
+ * Set the Timer Channel PWM pulse duration (in us)
+ */
+void tim_PwmChannelSetPulseDuration(const PwmChannel_t *pwmChannel, uint32_t pwmPulseUs);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

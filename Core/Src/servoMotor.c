@@ -99,7 +99,7 @@ void servoMotor_SetAngle(ServoMotorNumber_t motor, float angleDegrees)
 								  (uint32_t)( (angleDegrees * totalPulseUs) / totalAngle );
 
 			/* Set the PWM pulse duration to the relative motor PWM channel */
-			tim_PwmChannelSetPulseMicroseconds(pwmChannel, pwmPulseUs);
+			tim_PwmChannelSetPulseDuration(pwmChannel, pwmPulseUs);
 		}
 	}
 }

@@ -21,13 +21,15 @@
 #include "tim.h"
 
 /* USER CODE BEGIN 0 */
+/* Configuration structure of a timer */
 typedef struct TimerConfig_s
 {
 	TIM_TypeDef       *instance;
 	TIM_HandleTypeDef *handler;
 } TimerConfig_s;
 
-static TimerConfig_s KT_TimerConfig[TIMER_NUM_MAX] =
+/* Constant table with the configuration of the timers */
+static const TimerConfig_s KT_TimerConfig[TIMER_NUM_MAX] =
 {
 		{TIM1, &htim1}, /* TIMER_1 */
 		{NULL, NULL  }, /* TIMER_2 */
@@ -39,7 +41,8 @@ static TimerConfig_s KT_TimerConfig[TIMER_NUM_MAX] =
 		{NULL, NULL  }, /* TIMER_8 */
 };
 
-static uint32_t KT_TimerChannels[TIMER_CH_NUM_MAX] =
+/* Constant table with the configuration of the timers channel */
+static const uint32_t KT_TimerChannels[TIMER_CH_NUM_MAX] =
 {
 		TIM_CHANNEL_1,  /* TIMER_CH1 */
 		TIM_CHANNEL_2,  /* TIMER_CH2 */
@@ -47,6 +50,9 @@ static uint32_t KT_TimerChannels[TIMER_CH_NUM_MAX] =
 		TIM_CHANNEL_4,  /* TIMER_CH4 */
 };
 
+/*
+ * Get the Timer Peripheral bus clock
+ */
 static uint32_t tim_GetTimerBusClock(void);
 /* USER CODE END 0 */
 
@@ -190,6 +196,9 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
+/*
+ * Config the Timer Channel as PWM
+ */
 void tim_PwmChannelConfig(const PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision)
 {
 	TIM_HandleTypeDef 		*pTimHandler;
@@ -213,7 +222,7 @@ void tim_PwmChannelConfig(const PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, ui
 	timerBusClock = tim_GetTimerBusClock();
 	timerClock    = 1000000uL     / pwmPulseUsPrecision;
 	prescaler     = timerBusClock / timerClock;
-	counterPeriod = timerClock    / pwmFreqHz;
+	counterPeriod = (timerClock    / pwmFreqHz) - 1uL;
 
 	HAL_TIM_PWM_Stop(pTimHandler, timChannel);
 	pTimHandler->Instance = KT_TimerConfig[pwmChannel->timer].instance;
@@ -247,7 +256,10 @@ void tim_PwmChannelConfig(const PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, ui
 
 }
 
-void tim_PwmChannelSetPulseMicroseconds(const PwmChannel_t *pwmChannel, uint32_t pwmPulseUs)
+/*
+ * Set the Timer Channel PWM pulse duration (in us)
+ */
+void tim_PwmChannelSetPulseDuration(const PwmChannel_t *pwmChannel, uint32_t pwmPulseUs)
 {
 	TIM_HandleTypeDef	*pTimHandler;
 	uint32_t         	timChannel;
@@ -265,7 +277,7 @@ void tim_PwmChannelSetPulseMicroseconds(const PwmChannel_t *pwmChannel, uint32_t
 	HAL_TIM_PWM_Stop(pTimHandler, timChannel);
 
 	sConfigOC.OCMode     = TIM_OCMODE_PWM1;
-	sConfigOC.Pulse      = pwmPulseUs;
+	sConfigOC.Pulse      = pwmPulseUs - 1L;
 	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 	if (HAL_TIM_PWM_ConfigChannel(pTimHandler, &sConfigOC, timChannel) != HAL_OK)
@@ -276,6 +288,9 @@ void tim_PwmChannelSetPulseMicroseconds(const PwmChannel_t *pwmChannel, uint32_t
 	HAL_TIM_PWM_Start(pTimHandler, timChannel);
 }
 
+/*
+ * Get the Timer Peripheral bus clock
+ */
 static uint32_t tim_GetTimerBusClock(void)
 {
 	uint32_t hclk = 0uL;
