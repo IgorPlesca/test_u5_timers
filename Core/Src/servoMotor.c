@@ -37,13 +37,13 @@ static const ServoMotorConfig_t KT_ServoModelsConfig[SERVO_MODELS_NUM_MAX] =
 };
 
 /* Current servo motor config for initiated motors */
-static ServoMotorConfig_t m_ServoConfig[SERVO_MOTOR_NUM_MAX] = {0};
+static ServoMotorModel_t m_ServoMotorMap[SERVO_MOTOR_NUM_MAX] = {0};
 
 /* Current servo motor config status for motors */
-static bool               m_ServoConfigStatus[SERVO_MOTOR_NUM_MAX] = {false};
+static bool               m_ServoMotorMapStatus[SERVO_MOTOR_NUM_MAX] = {false};
 
 /* PWM configuration for relative motors */
-static const PwmChannel_t m_PwmChannelConfig[SERVO_MOTOR_NUM_MAX] =
+static const PwmChannel_t KT_PwmChannelConfig[SERVO_MOTOR_NUM_MAX] =
 {
 		{TIMER_1, TIM_CHANNEL_1}, /* PWM Channel for Servo Motor 1 */
 };
@@ -57,33 +57,40 @@ void servoMotor_Init(ServoMotorNumber_t motorNum, ServoMotorModel_t motorModel)
 	if( (motorNum   < SERVO_MOTOR_NUM_MAX ) &&
 		(motorModel < SERVO_MODELS_NUM_MAX) )
 	{
-		/* Copy the selected servo model config into the selected servo motor config */
-		(void) memcpy((void*)&m_ServoConfig[motorNum],
-			          (void*)&KT_ServoModelsConfig[motorModel],
-					  sizeof(m_ServoConfig[motorNum]));
+		/* Map the wanted servo motor with a servo motor model */
+		m_ServoMotorMap[motorNum]       = motorModel;
+		m_ServoMotorMapStatus[motorNum] = true;
+	}
+}
 
+/*
+ * Start the selected motor PWM channel
+ */
+void servoMotor_StartPwm(ServoMotorNumber_t motorNum)
+{
+	/* Check if motor number is correct and if it's configured */
+	if( (motorNum < SERVO_MOTOR_NUM_MAX)        &&
+		(true == m_ServoMotorMapStatus[motorNum]) )
+	{
 		/* Timer PWM configuration */
-		tim_PwmChannelConfig(&m_PwmChannelConfig[motorNum],
-				              m_ServoConfig[motorNum].pwmFreqHz,
-				              m_ServoConfig[motorNum].pwmPulseUsPrecision);
-
-		/* Servo/PWM Config end */
-		m_ServoConfigStatus[motorNum] = true;
+		tim_PwmChannelConfig(&KT_PwmChannelConfig[motorNum],
+				              KT_ServoModelsConfig[m_ServoMotorMap[motorNum]].pwmFreqHz,
+				              KT_ServoModelsConfig[m_ServoMotorMap[motorNum]].pwmPulseUsPrecision);
 	}
 }
 
 /**
  * Set the Angle for a selected motor
  */
-void servoMotor_SetAngle(ServoMotorNumber_t motor, float angleDegrees)
+void servoMotor_SetAngle(ServoMotorNumber_t motorNum, float angleDegrees)
 {
 	/* Check if motor number is correct and if it's configured */
-	if( (motor < SERVO_MOTOR_NUM_MAX)        &&
-	    (true == m_ServoConfigStatus[motor]) )
+	if( (motorNum < SERVO_MOTOR_NUM_MAX)        &&
+	    (true == m_ServoMotorMapStatus[motorNum]) )
 	{
 		/* Select servo motor and it's relative PWM channel configurations */
-		ServoMotorConfig_t *servoConfig = &m_ServoConfig[motor];
-		const PwmChannel_t *pwmChannel  = &m_PwmChannelConfig[motor];
+		const ServoMotorConfig_t *servoConfig = &KT_ServoModelsConfig[m_ServoMotorMap[motorNum]];
+		const PwmChannel_t       *pwmChannel  = &KT_PwmChannelConfig[motorNum];
 
 		/* Check if the selected angle is between the acceptable limits */
 		if( ( angleDegrees >= (float) servoConfig->angleDegreeMin) &&
