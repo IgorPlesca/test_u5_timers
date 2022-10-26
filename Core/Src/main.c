@@ -93,8 +93,10 @@ int main(void)
   MX_ICACHE_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-  /* Config Servo Motor 1 */
+  /* Config Servo Motors */
   servoMotor_Init(SERVO_MOTOR_1, SERVO_MODEL_DM996);
+  /* Start Servo Motors PWM */
+  servoMotor_StartPwm(SERVO_MOTOR_1);
   /* USER CODE END 2 */
 
   /* Infinite loop */

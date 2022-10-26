@@ -29,6 +29,11 @@ typedef enum ServoMotorNumber_e
  */
 void servoMotor_Init(ServoMotorNumber_t motorNum, ServoMotorModel_t motorModel);
 
+/*
+ * Start the selected motor PWM channel
+ */
+void servoMotor_StartPwm(ServoMotorNumber_t motorNum);
+
 /**
  * Set the Angle for a selected motor
  */
