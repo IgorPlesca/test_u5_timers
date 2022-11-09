@@ -1,0 +1,36 @@
+
+Known
+	timer bus clock freq	=  4 [MHz]	(APB1 clock)
+	timer accuracy  		= 16 [bit]	(Timer 1)
+	pwm freq   			    = 50 [Hz]	(motor spec.)
+	pulse duration accuracy =  1 [us]	(motor spec., to be verified)
+
+Unknown
+	prescaler = ?
+	counter period = ?
+	timer accuracy is enough? 
+	
+
+Solving
+	timer clock duration = pulse duration accuracy
+
+	timer clock freq = 1 / pulse duration accuracy
+
+	timer clock freq = 1 / 0.000001 [s] = 1 000 000 [Hz]
+
+	timer clock freq = timer bus clock freq / prescaler
+
+	prescaler = timer bus clock freq / timer clock freq
+
+		prescaler = 4 000 000 [Hz] / 1 000 000 [Hz] = 4
+
+	counter period = (timer clock freq / pwm freq) - 1
+
+		counter period = (1 000 000 [Hz] / 50 [Hz]) - 1 = 19 999
+
+	timer accuracy is enough?
+	
+	log2(counter period) = log2(20 000) = 15 bit <= 16bit (timer accuracy)
+
+		timer accuracy is enough!
+
