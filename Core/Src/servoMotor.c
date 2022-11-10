@@ -22,13 +22,6 @@ typedef struct ServoMotorModelConfig_s
 	uint16_t angleDegreeMax;        /* Maximum shaft angle             (in degrees) */
 } ServoMotorModelConfig_t;
 
-/* Configuration state of a servo motor */
-typedef struct ServoMotorConfigState_s
-{
-	ServoMotorModel_t motorModel;         /* The model of the motor     */
-	bool              isMotorConfigured;  /* Is the motor it configured */
-} ServoMotorConfigState_t;
-
 /* Servo Motor models configurations */
 static const ServoMotorModelConfig_t KT_ServoModelsConfig[SERVO_MODELS_NUM_MAX] =
 {
@@ -43,50 +36,31 @@ static const ServoMotorModelConfig_t KT_ServoModelsConfig[SERVO_MODELS_NUM_MAX] 
 		},
 };
 
-/* PWM configuration for relative motors */
-static const PwmChannel_t KT_PwmChannelConfig[SERVO_MOTOR_NUM_MAX] =
-{
-		{TIMER_1, TIM_CHANNEL_1},     /* PWM Channel for Servo Motor 1 */
-};
-
-/* Current servo motor config status for motors */
-static ServoMotorConfigState_t m_ServoMotorConfigState[SERVO_MOTOR_NUM_MAX] =
-{
-		{SERVO_MOTOR_NUM_MAX, false}, /* Configuration State for Servo Motor 1 */
-};
-
-
+static ServoMotorModel_t m_ServoMotorModel             = SERVO_MODELS_NUM_MAX;
+static bool              m_ServoMotorModelIsConfigured = false;
 /**
  *  Initialize the selected motor with a specific model configuration
  */
-void servoMotor_Init(ServoMotorNumber_t motorNum, ServoMotorModel_t motorModel)
+void servoMotor_Init(ServoMotorModel_t motorModel)
 {
-	/* Check if motor number and motor model are correct */
-	if( (motorNum   < SERVO_MOTOR_NUM_MAX ) &&
-		(motorModel < SERVO_MODELS_NUM_MAX) )
-	{
-		/* Map the wanted servo motor with a servo motor model */
-		m_ServoMotorConfigState[motorNum].motorModel        = motorModel;
-		m_ServoMotorConfigState[motorNum].isMotorConfigured = true;
-	}
+	m_ServoMotorModel             = motorModel;
+	m_ServoMotorModelIsConfigured = true;
 }
 
 /*
  * Start the selected motor PWM channel
  */
-void servoMotor_StartPwm(ServoMotorNumber_t motorNum)
+void servoMotor_StartPwm(void)
 {
-	/* Check if motor number is correct and if it's configured */
-	if(motorNum < SERVO_MOTOR_NUM_MAX)
+	if(true == m_ServoMotorModelIsConfigured)
 	{
-		if(true == m_ServoMotorConfigState[motorNum].isMotorConfigured)
+		for(ServoMotorNumber_t i=SERVO_MOTOR_1; i<SERVO_MOTOR_NUM_MAX; i++)
 		{
 			/* Select servo motor and it's relative PWM channel configurations */
-			const ServoMotorModelConfig_t *servoConfig = &KT_ServoModelsConfig[m_ServoMotorConfigState[motorNum].motorModel];
-			const PwmChannel_t            *pwmChannel  = &KT_PwmChannelConfig[motorNum];
+			const ServoMotorModelConfig_t *servoConfig = &KT_ServoModelsConfig[m_ServoMotorModel];
 
 			/* Configuration of the selected motor PWM channel */
-			tim_PwmChannelConfig(pwmChannel, servoConfig->pwmFreqHz, servoConfig->pwmPulseUsPrecision);
+			tim_PwmChannelConfig(servoConfig->pwmFreqHz, servoConfig->pwmPulseUsPrecision);
 		}
 	}
 }
@@ -94,20 +68,23 @@ void servoMotor_StartPwm(ServoMotorNumber_t motorNum)
 /**
  * Set the Angle for a selected motor
  */
-void servoMotor_SetAngle(ServoMotorNumber_t motorNum, float angleDegrees)
+void servoMotor_SetAngle(const ServoMotorAngleConfig_t motorAngleConfig)
 {
-	/* Check if motor number is correct and if it's configured */
-	if(motorNum < SERVO_MOTOR_NUM_MAX)
+	PwmPulseConfig_t pwmPulseUsConfig;
+
+	/* Check if motor number is configured */
+	if(true == m_ServoMotorModelIsConfigured)
 	{
-		if(true == m_ServoMotorConfigState[motorNum].isMotorConfigured)
+		/* Compute the PWM pulse duration for every configured servo motor */
+		for(ServoMotorNumber_t i=SERVO_MOTOR_1; i<SERVO_MOTOR_NUM_MAX; i++)
 		{
 			/* Select servo motor and it's relative PWM channel configurations */
-			const ServoMotorModelConfig_t *servoConfig = &KT_ServoModelsConfig[m_ServoMotorConfigState[motorNum].motorModel];
-			const PwmChannel_t            *pwmChannel  = &KT_PwmChannelConfig[motorNum];
+			const ServoMotorModelConfig_t *servoConfig = &KT_ServoModelsConfig[m_ServoMotorModel];
+			float angleDegrees = motorAngleConfig[i];
 
 			/* Check if the selected angle is between the acceptable limits of the selected motor model config. */
 			if( ( angleDegrees >= (float) servoConfig->angleDegreeMin) &&
-                ( angleDegrees <= (float) servoConfig->angleDegreeMax) )
+			    ( angleDegrees <= (float) servoConfig->angleDegreeMax) )
 			{
 				/* Compute the total shaft angle and PWM pulse duration intervals */
 				uint16_t totalAngle   = servoConfig->angleDegreeMax - servoConfig->angleDegreeMin;
@@ -115,12 +92,12 @@ void servoMotor_SetAngle(ServoMotorNumber_t motorNum, float angleDegrees)
 
 				/* Translate shaft angle in PWM pulse duration:
 				 * Total Pulse Duration =  Minimum pulse duration + Angle related pulse duration */
-				uint32_t pwmPulseUs = servoConfig->pwmPulseUsMin +
+				pwmPulseUsConfig[i] = servoConfig->pwmPulseUsMin +
 						              (uint32_t)( (angleDegrees * totalPulseUs) / totalAngle );
-
-				/* Set the PWM pulse duration to the selected motor PWM channel */
-				tim_PwmChannelSetPulseDuration(pwmChannel, pwmPulseUs);
 			}
 		}
 	}
+
+	/* Set the PWM pulse duration to the configured motors PWM channels */
+	tim_PwmChannelSetPulseDuration(pwmPulseUsConfig);
 }

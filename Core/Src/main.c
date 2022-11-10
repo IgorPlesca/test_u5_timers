@@ -94,20 +94,27 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   /* Config Servo Motors */
-  servoMotor_Init(SERVO_MOTOR_1, SERVO_MODEL_DM996);
+  servoMotor_Init(SERVO_MODEL_DM996);
   /* Start Servo Motors PWM */
-  servoMotor_StartPwm(SERVO_MOTOR_1);
+  servoMotor_StartPwm();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   float angleDegrees = 0.0f;
+  ServoMotorAngleConfig_t motorAngleConfig = {0.0f};
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  servoMotor_SetAngle(SERVO_MOTOR_1, angleDegrees);
+
+	  for(uint8_t i=0u; i<SERVO_MOTOR_NUM_MAX; i++)
+	  {
+		  motorAngleConfig[i] = angleDegrees;
+	  }
+
+	  servoMotor_SetAngle(motorAngleConfig);
 	  HAL_Delay(1000u);
 
 	  if(angleDegrees + 10.0f > 120.0f)

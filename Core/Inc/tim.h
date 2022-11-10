@@ -36,35 +36,17 @@ extern TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN Private defines */
 /* Timer definitions */
-typedef enum Timer_e
+typedef enum PwmChannel_e
 {
-	TIMER_1 = 0x00U,
-	TIMER_2,
-	TIMER_3,
-	TIMER_4,
-	TIMER_5,
-	TIMER_6,
-	TIMER_7,
-	TIMER_8,
-	TIMER_NUM_MAX,
-} Timer_t;
+	PWM_CHANNEL_1 = 0x00,
+	PWM_CHANNEL_2,
+	PWM_CHANNEL_3,
+	PWM_CHANNEL_4,
 
-/* Timer channel configuration */
-typedef enum TimerChannel_e
-{
-	TIMER_CH1 = 0x00U,
-	TIMER_CH2,
-	TIMER_CH3,
-	TIMER_CH4,
-	TIMER_CH_NUM_MAX,
-} TimerChannel_t;
-
-/* PWM channel definition */
-typedef struct PwmChannel_s
-{
-	Timer_t 	   timer;
-	TimerChannel_t timerChannel;
+	PWM_CHANNEL_NUM_MAX,
 } PwmChannel_t;
+
+typedef uint32_t PwmPulseConfig_t[PWM_CHANNEL_NUM_MAX] ;
 
 /* USER CODE END Private defines */
 
@@ -76,12 +58,12 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 /*
  * Config the Timer Channel as PWM
  */
-void tim_PwmChannelConfig(const PwmChannel_t *pwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision);
+void tim_PwmChannelConfig(uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision);
 
 /*
  * Set the Timer Channel PWM pulse duration (in us)
  */
-void tim_PwmChannelSetPulseDuration(const PwmChannel_t *pwmChannel, uint32_t pwmPulseUs);
+void tim_PwmChannelSetPulseDuration(PwmPulseConfig_t pwmPulseUsConfig);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
