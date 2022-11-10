@@ -55,7 +55,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 /*
  * Config the Timer Channel as PWM
  */
-void tim_PwmChannelConfig(TimerPwmChanel_t timerPwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision);
+void tim_PwmChannelConfig(TimerPwmChanel_t timerPwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseDurationUsGranularity);
 
 /*
  *  Stop the selected Timer's PWM
@@ -65,7 +65,7 @@ void tim_PwmChannelStop(TimerPwmChanel_t timerPwmChannel);
 /*
  *  Configure the pulse of the selected Timer's PWM
  */
-void tim_PwmChannelSetPulse(TimerPwmChanel_t timerPwmChannel, uint32_t pwmPulseUs);
+void tim_PwmChannelSetPulse(TimerPwmChanel_t timerPwmChannel, uint32_t pwmPulseDurationUs);
 
 /*
  *  Start the selected Timer's PWM

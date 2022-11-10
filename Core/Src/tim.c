@@ -202,7 +202,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 /*
  * Config the Timer Channel as PWM
  */
-void tim_PwmChannelConfig(TimerPwmChanel_t timerPwmChannel, uint32_t pwmFreqHz, uint32_t pwmDeadBandwidth)
+void tim_PwmChannelConfig(TimerPwmChanel_t timerPwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseDurationUsGranularity)
 {
 	TIM_HandleTypeDef 		*timHandler;
 	uint32_t           		timChannel;
@@ -215,9 +215,9 @@ void tim_PwmChannelConfig(TimerPwmChanel_t timerPwmChannel, uint32_t pwmFreqHz, 
 	TIM_ClockConfigTypeDef 	sClockSourceConfig = {0};
 	TIM_MasterConfigTypeDef sMasterConfig      = {0};
 
-	timerBusClock = tim_GetTimerBusClock();
-	timerClock    = 1000000uL     / pwmDeadBandwidth;
-	prescaler     = timerBusClock / timerClock;
+	timerBusClock =  tim_GetTimerBusClock();
+	timerClock    =  1000000uL     / pwmPulseDurationUsGranularity;
+	prescaler     =  timerBusClock / timerClock;
 	counterPeriod = (timerClock    / pwmFreqHz) - 1uL;
 
 	timHandler  = KT_PwmChannelConfig[timerPwmChannel].timerHandler;
@@ -280,7 +280,7 @@ void tim_PwmChannelStop(TimerPwmChanel_t timerPwmChannel)
 /*
  *  Configure the pulse of the Timer PWM
  */
-void tim_PwmChannelSetPulse(TimerPwmChanel_t timerPwmChannel, uint32_t pwmPulseUs)
+void tim_PwmChannelSetPulse(TimerPwmChanel_t timerPwmChannel, uint32_t pwmPulseDurationUs)
 {
 	TIM_HandleTypeDef *timHandler;
 	uint32_t           timChannel;
@@ -294,7 +294,7 @@ void tim_PwmChannelSetPulse(TimerPwmChanel_t timerPwmChannel, uint32_t pwmPulseU
 	}
 
 	sConfigOC.OCMode     = TIM_OCMODE_PWM1;
-	sConfigOC.Pulse      = pwmPulseUs - 1L;
+	sConfigOC.Pulse      = pwmPulseDurationUs - 1L;
 	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 	if (HAL_TIM_PWM_ConfigChannel(timHandler, &sConfigOC, timChannel) != HAL_OK)
