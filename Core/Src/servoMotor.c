@@ -36,10 +36,13 @@ static const ServoMotorModelConfig_t KT_ServoModelsConfig[SERVO_MODELS_NUM_MAX] 
 		},
 };
 
+/* The current model of the motors */
 static ServoMotorModel_t m_ServoMotorModel             = SERVO_MODELS_NUM_MAX;
+/* Tells if the current model of the motors was configured */
 static bool              m_ServoMotorModelIsConfigured = false;
+
 /**
- *  Initialize the selected motor with a specific model configuration
+ *  Initialize the motors with a specific model configuration
  */
 void servoMotor_Init(ServoMotorModel_t motorModel)
 {
@@ -48,9 +51,9 @@ void servoMotor_Init(ServoMotorModel_t motorModel)
 }
 
 /*
- * Start the selected motor PWM channel
+ * Start the motors
  */
-void servoMotor_StartPwm(void)
+void servoMotor_Start(void)
 {
 	if(true == m_ServoMotorModelIsConfigured)
 	{
@@ -66,9 +69,9 @@ void servoMotor_StartPwm(void)
 }
 
 /**
- * Set the Angle for a selected motor
+ * Set the angles for all the motors
  */
-void servoMotor_SetAngle(const ServoMotorAngleConfig_t motorAngleConfig)
+void servoMotor_SetAngles(const ServoMotorAngleConfig_t motorAngleConfig)
 {
 	PwmPulseConfig_t pwmPulseUsConfig;
 

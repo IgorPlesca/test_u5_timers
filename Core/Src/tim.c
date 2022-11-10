@@ -21,13 +21,6 @@
 #include "tim.h"
 
 /* USER CODE BEGIN 0 */
-/* Configuration structure of a timer */
-typedef struct TimerConfig_s
-{
-	TIM_TypeDef       *instance;
-	TIM_HandleTypeDef *handler;
-} TimerConfig_t;
-
 /* PWM channel definition */
 typedef struct PwmChannelConfig_s
 {

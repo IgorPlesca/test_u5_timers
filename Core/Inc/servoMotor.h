@@ -30,18 +30,18 @@ typedef enum ServoMotorNumber_e
 typedef float ServoMotorAngleConfig_t[SERVO_MOTOR_NUM_MAX];
 
 /**
- *  Initialize the selected motor with a specific model configuration
+ *  Initialize the motors with a specific model configuration
  */
 void servoMotor_Init(ServoMotorModel_t motorModel);
 
 /*
- * Start the selected motor PWM channel
+ * Start the motors
  */
-void servoMotor_StartPwm(void);
+void servoMotor_Start(void);
 
 /**
- * Set the Angle for a selected motor
+ * Set the angles for all the motors
  */
-void servoMotor_SetAngle(const ServoMotorAngleConfig_t motorAngleConfig);
+void servoMotor_SetAngles(const ServoMotorAngleConfig_t motorAngleConfig);
 
 #endif /* INC_SERVOMOTOR_H_ */

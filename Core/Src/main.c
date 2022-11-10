@@ -96,7 +96,7 @@ int main(void)
   /* Config Servo Motors */
   servoMotor_Init(SERVO_MODEL_DM996);
   /* Start Servo Motors PWM */
-  servoMotor_StartPwm();
+  servoMotor_Start();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -114,7 +114,7 @@ int main(void)
 		  motorAngleConfig[i] = angleDegrees;
 	  }
 
-	  servoMotor_SetAngle(motorAngleConfig);
+	  servoMotor_SetAngles(motorAngleConfig);
 	  HAL_Delay(1000u);
 
 	  if(angleDegrees + 10.0f > 120.0f)
