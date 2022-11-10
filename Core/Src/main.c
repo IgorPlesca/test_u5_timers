@@ -119,7 +119,7 @@ int main(void)
 	  servoMotor_SetAngles(motorAngleConfig);
 	  HAL_Delay(1000u);
 
-	  if(angleDegrees + 10.0f > 120.0f)
+	  if(angleDegrees + 10.0f > 180.0f)
 	  {
 		  angleDegrees = 0.0f;
 	  }

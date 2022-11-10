@@ -16,7 +16,7 @@
 typedef struct ServoMotorModelConfig_s
 {
 	uint32_t pwmFreqHz;          /* PWM frequency for driving motor (in Hz)      */
-	uint32_t pwmDeadBandwidth;   /* PWM pulse duration precision    (in us)      */
+	uint32_t pwmDeadBandwidth;   /* PWM dead bandwidth (angle prec.)(in us)      */
 	uint32_t pwmPulseUsMin;      /* PWM pulse minimum duration      (in us)      */
 	uint32_t pwmPulseUsMax;      /* PWM pulse maximum duration      (in us)      */
 	float    angleDegreeMin;     /* Minimum shaft angle             (in degrees) */
@@ -29,7 +29,7 @@ static const ServoMotorModelConfig_t KT_ServoModelsConfig[SERVO_MODELS_NUM_MAX] 
 	/* Servo Motor DM996 */
 	{
 		.pwmFreqHz        =   50uL, /*  20 ms PWM period duration     ->   50 Hz  */
-		.pwmDeadBandwidth =    1uL, /*   8 us of dead bandwidth       ->    8 us  */
+		.pwmDeadBandwidth =    8uL, /*   8 us of dead bandwidth       ->    8 us  */
 		.pwmPulseUsMin    =  500uL, /* 0.5 ms of minimum pulse length ->  500 us  */
 		.pwmPulseUsMax    = 2500uL, /* 2.5 ms of maximum pulse length -> 2500 us  */
 		.angleDegreeMin   =     0u, /* minimum shaft angle            ->    0 deg */
@@ -79,7 +79,7 @@ void servoMotor_Start(void)
  */
 void servoMotor_SetAngles(const ServoMotorAngleConfig_t motorAngleConfig)
 {
-	PwmPulseConfig_t pwmPulseUsConfig;
+	PwmPulseConfig_t pwmPulseConfig;
 
 	debug_print("\nServo Motor SetAngles\n");
 
@@ -105,20 +105,26 @@ void servoMotor_SetAngles(const ServoMotorAngleConfig_t motorAngleConfig)
 
 				/* Translate shaft angle in PWM pulse duration:
 				 * Total Pulse Duration =  Minimum pulse duration + Angle related pulse duration */
-				pwmPulseUsConfig[i] = servoConfig->pwmPulseUsMin +
-						              (uint32_t)( (angleDegrees * totalPulseUs) / totalAngle );
+				pwmPulseConfig[i] = servoConfig->pwmPulseUsMin +
+						            (uint32_t)( (angleDegrees * totalPulseUs) / totalAngle );
 			}
 			else
 			{
 				/* Angle computation error: put to the minimum angle */
-				pwmPulseUsConfig[i] = servoConfig->pwmPulseUsMin;
+				pwmPulseConfig[i] = servoConfig->pwmPulseUsMin;
 			}
 
-			debug_print("SM%u: A = %6.2f, PD = %4lu\n", (i+1), angleDegrees, pwmPulseUsConfig[i]);
+			/* Computing how many complete dead bandwidths (angle precision)
+			 * are in the total pulse duration relative to the wanted angle */
+			pwmPulseConfig[i] /= servoConfig->pwmDeadBandwidth;
+
+			debug_print("SM%u: A = %6.2f, PC = %4lu, PD = %4lu\n", (i+1),  angleDegrees,
+																		   pwmPulseConfig[i],
+																		   pwmPulseConfig[i]*servoConfig->pwmDeadBandwidth);
 		}
 
 		/* Set the PWM pulse duration to the configured motors PWM channels */
-		pwm_ChannelsSetPulseDurations(pwmPulseUsConfig);
+		pwm_ChannelsSetPulseDurations(pwmPulseConfig);
 	}
 	else
 	{
