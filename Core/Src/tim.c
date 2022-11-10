@@ -37,7 +37,7 @@ typedef struct PwmChannelConfig_s
 } PwmChannelConfig_t;
 
 /* PWM configuration for relative motors */
-static const PwmChannelConfig_t KT_PwmChannelConfig[PWM_CHANNEL_NUM_MAX] =
+static const PwmChannelConfig_t KT_PwmChannelConfig[TIMER_PWM_CHANNEL_NUM_MAX] =
 {
 		{TIM1, &htim1, TIM_CHANNEL_1},     /* PWM Channel 1 */
 		{TIM1, &htim1, TIM_CHANNEL_2},     /* PWM Channel 2 */
@@ -209,7 +209,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 /*
  * Config the Timer Channel as PWM
  */
-void tim_PwmChannelConfig(uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision)
+void tim_PwmChannelConfig(TimerPwmChanel_t timerPwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision)
 {
 	TIM_HandleTypeDef 		*timHandler;
 	uint32_t           		timChannel;
@@ -221,110 +221,110 @@ void tim_PwmChannelConfig(uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision)
 	uint32_t 				prescaler          = 0uL;
 	TIM_ClockConfigTypeDef 	sClockSourceConfig = {0};
 	TIM_MasterConfigTypeDef sMasterConfig      = {0};
-	PwmChannel_t            i;
 
 	timerBusClock = tim_GetTimerBusClock();
 	timerClock    = 1000000uL     / pwmPulseUsPrecision;
 	prescaler     = timerBusClock / timerClock;
 	counterPeriod = (timerClock    / pwmFreqHz) - 1uL;
 
-	for(i=PWM_CHANNEL_1; i<PWM_CHANNEL_NUM_MAX; i++)
+	timHandler  = KT_PwmChannelConfig[timerPwmChannel].timerHandler;
+	timChannel  = KT_PwmChannelConfig[timerPwmChannel].timerChannel;
+	timInstance = KT_PwmChannelConfig[timerPwmChannel].timerInstance;
+	if( (NULL == timHandler) || (NULL == timInstance))
 	{
-		timHandler  = KT_PwmChannelConfig[i].timerHandler;
-		timChannel  = KT_PwmChannelConfig[i].timerChannel;
-		timInstance = KT_PwmChannelConfig[i].timerInstance;
-		if( (NULL == timHandler) || (NULL == timInstance))
-		{
-			Error_Handler();
-		}
+		Error_Handler();
+	}
 
-		HAL_TIM_PWM_Stop(timHandler, timChannel);
-		timHandler->Instance               = timInstance;
-		timHandler->Init.Prescaler         = prescaler;
-		timHandler->Init.CounterMode       = TIM_COUNTERMODE_UP;
-		timHandler->Init.Period            = counterPeriod;
-		timHandler->Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
-		timHandler->Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-		if (HAL_TIM_Base_Init(timHandler) != HAL_OK)
-		{
-			Error_Handler();
-		}
+	HAL_TIM_PWM_Stop(timHandler, timChannel);
+	timHandler->Instance               = timInstance;
+	timHandler->Init.Prescaler         = prescaler;
+	timHandler->Init.CounterMode       = TIM_COUNTERMODE_UP;
+	timHandler->Init.Period            = counterPeriod;
+	timHandler->Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+	timHandler->Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	if (HAL_TIM_Base_Init(timHandler) != HAL_OK)
+	{
+		Error_Handler();
+	}
 
-		sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-		if (HAL_TIM_ConfigClockSource(timHandler, &sClockSourceConfig) != HAL_OK)
-		{
-			Error_Handler();
-		}
+	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+	if (HAL_TIM_ConfigClockSource(timHandler, &sClockSourceConfig) != HAL_OK)
+	{
+		Error_Handler();
+	}
 
-		if (HAL_TIM_PWM_Init(timHandler) != HAL_OK)
-		{
-			Error_Handler();
-		}
+	if (HAL_TIM_PWM_Init(timHandler) != HAL_OK)
+	{
+		Error_Handler();
+	}
 
-		sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-		sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-		if (HAL_TIMEx_MasterConfigSynchronization(timHandler, &sMasterConfig) != HAL_OK)
-		{
-			Error_Handler();
-		}
+	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+	if (HAL_TIMEx_MasterConfigSynchronization(timHandler, &sMasterConfig) != HAL_OK)
+	{
+		Error_Handler();
 	}
 }
 
 /*
- * Set the Timer Channel PWM pulse duration (in us)
+ *  Stop the Timer PWM
  */
-void tim_PwmChannelSetPulseDuration(PwmPulseConfig_t pwmPulseUsConfig)
+void tim_PwmChannelStop(TimerPwmChanel_t timerPwmChannel)
 {
 	TIM_HandleTypeDef *timHandler;
 	uint32_t           timChannel;
 
-	PwmChannel_t i;
+	timHandler  = KT_PwmChannelConfig[timerPwmChannel].timerHandler;
+	timChannel  = KT_PwmChannelConfig[timerPwmChannel].timerChannel;
+	if(NULL == timHandler)
+	{
+		Error_Handler();
+	}
+
+	HAL_TIM_PWM_Stop(timHandler, timChannel);
+}
+
+/*
+ *  Configure the pulse of the Timer PWM
+ */
+void tim_PwmChannelSetPulse(TimerPwmChanel_t timerPwmChannel, uint32_t pwmPulseUs)
+{
+	TIM_HandleTypeDef *timHandler;
+	uint32_t           timChannel;
 	TIM_OC_InitTypeDef sConfigOC = {0};
 
-	/* Stop all PWM channels */
-	for(i=PWM_CHANNEL_1; i<PWM_CHANNEL_NUM_MAX; i++)
+	timHandler  = KT_PwmChannelConfig[timerPwmChannel].timerHandler;
+	timChannel  = KT_PwmChannelConfig[timerPwmChannel].timerChannel;
+	if(NULL == timHandler)
 	{
-		timHandler  = KT_PwmChannelConfig[i].timerHandler;
-		timChannel  = KT_PwmChannelConfig[i].timerChannel;
-		if(NULL == timHandler)
-		{
-			Error_Handler();
-		}
+		Error_Handler();
+	}
+	sConfigOC.OCMode     = TIM_OCMODE_PWM1;
+	sConfigOC.Pulse      = pwmPulseUs - 1L;
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	if (HAL_TIM_PWM_ConfigChannel(timHandler, &sConfigOC, timChannel) != HAL_OK)
+	{
+		Error_Handler();
+	}
+}
 
-		HAL_TIM_PWM_Stop(timHandler, timChannel);
+/*
+ *  Start the Timer PWM
+ */
+void tim_PwmChannelStart(TimerPwmChanel_t timerPwmChannel)
+{
+	TIM_HandleTypeDef *timHandler;
+	uint32_t           timChannel;
+
+	timHandler  = KT_PwmChannelConfig[timerPwmChannel].timerHandler;
+	timChannel  = KT_PwmChannelConfig[timerPwmChannel].timerChannel;
+	if(NULL == timHandler)
+	{
+		Error_Handler();
 	}
 
-	/* Reconfig PWM pulse */
-	for(i=PWM_CHANNEL_1; i<PWM_CHANNEL_NUM_MAX; i++)
-	{
-		timHandler  = KT_PwmChannelConfig[i].timerHandler;
-		timChannel  = KT_PwmChannelConfig[i].timerChannel;
-		if(NULL == timHandler)
-		{
-			Error_Handler();
-		}
-		sConfigOC.OCMode     = TIM_OCMODE_PWM1;
-		sConfigOC.Pulse      = pwmPulseUsConfig[0] - 1L;
-		sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-		sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-		if (HAL_TIM_PWM_ConfigChannel(timHandler, &sConfigOC, timChannel) != HAL_OK)
-		{
-			Error_Handler();
-		}
-	}
-
-	/* Start all PWM channels */
-	for(i=PWM_CHANNEL_1; i<PWM_CHANNEL_NUM_MAX; i++)
-	{
-		timHandler  = KT_PwmChannelConfig[i].timerHandler;
-		timChannel  = KT_PwmChannelConfig[i].timerChannel;
-		if(NULL == timHandler)
-		{
-			Error_Handler();
-		}
-
-		HAL_TIM_PWM_Start(timHandler, timChannel);
-	}
+	HAL_TIM_PWM_Start(timHandler, timChannel);
 }
 
 /*

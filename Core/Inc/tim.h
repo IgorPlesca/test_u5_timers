@@ -35,19 +35,16 @@ extern "C" {
 extern TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN Private defines */
-/* Timer definitions */
-typedef enum PwmChannel_e
+/* Timer PWM Channels enumeratives */
+typedef enum TimerPwmChanel_e
 {
-	PWM_CHANNEL_1 = 0x00,
-	PWM_CHANNEL_2,
-	PWM_CHANNEL_3,
-	PWM_CHANNEL_4,
+	TIMER_PWM_CHANNEL_1 = 0x00,
+	TIMER_PWM_CHANNEL_2,
+	TIMER_PWM_CHANNEL_3,
+	TIMER_PWM_CHANNEL_4,
 
-	PWM_CHANNEL_NUM_MAX,
-} PwmChannel_t;
-
-typedef uint32_t PwmPulseConfig_t[PWM_CHANNEL_NUM_MAX] ;
-
+	TIMER_PWM_CHANNEL_NUM_MAX
+} TimerPwmChanel_t;
 /* USER CODE END Private defines */
 
 void MX_TIM1_Init(void);
@@ -58,12 +55,23 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 /*
  * Config the Timer Channel as PWM
  */
-void tim_PwmChannelConfig(uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision);
+void tim_PwmChannelConfig(TimerPwmChanel_t timerPwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision);
 
 /*
- * Set the Timer Channel PWM pulse duration (in us)
+ *  Stop the selected Timer's PWM
  */
-void tim_PwmChannelSetPulseDuration(PwmPulseConfig_t pwmPulseUsConfig);
+void tim_PwmChannelStop(TimerPwmChanel_t timerPwmChannel);
+
+/*
+ *  Configure the pulse of the selected Timer's PWM
+ */
+void tim_PwmChannelSetPulse(TimerPwmChanel_t timerPwmChannel, uint32_t pwmPulseUs);
+
+/*
+ *  Start the selected Timer's PWM
+ */
+void tim_PwmChannelStart(TimerPwmChanel_t timerPwmChannel);
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

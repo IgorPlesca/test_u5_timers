@@ -6,7 +6,7 @@
  */
 
 #include <servoMotor.h>
-#include "tim.h"
+#include "pwm.h"
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -60,7 +60,7 @@ void servoMotor_StartPwm(void)
 			const ServoMotorModelConfig_t *servoConfig = &KT_ServoModelsConfig[m_ServoMotorModel];
 
 			/* Configuration of the selected motor PWM channel */
-			tim_PwmChannelConfig(servoConfig->pwmFreqHz, servoConfig->pwmPulseUsPrecision);
+			pwm_ConfigChannels(servoConfig->pwmFreqHz, servoConfig->pwmPulseUsPrecision);
 		}
 	}
 }
@@ -95,9 +95,14 @@ void servoMotor_SetAngle(const ServoMotorAngleConfig_t motorAngleConfig)
 				pwmPulseUsConfig[i] = servoConfig->pwmPulseUsMin +
 						              (uint32_t)( (angleDegrees * totalPulseUs) / totalAngle );
 			}
+			else
+			{
+				/* Angle computation error: put to the minimum angle */
+				pwmPulseUsConfig[i] = servoConfig->pwmPulseUsMin;
+			}
 		}
-	}
 
-	/* Set the PWM pulse duration to the configured motors PWM channels */
-	tim_PwmChannelSetPulseDuration(pwmPulseUsConfig);
+		/* Set the PWM pulse duration to the configured motors PWM channels */
+		pwm_ChannelsSetPulseDurations(pwmPulseUsConfig);
+	}
 }
