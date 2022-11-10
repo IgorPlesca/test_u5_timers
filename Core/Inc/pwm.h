@@ -21,6 +21,7 @@ typedef enum PwmChannel_e
 	PWM_CHANNEL_NUM_MAX,
 } PwmChannel_t;
 
+/* Type of the array of pulse durations for all PWM channels */
 typedef uint32_t PwmPulseConfig_t[PWM_CHANNEL_NUM_MAX] ;
 
 /*
@@ -29,7 +30,7 @@ typedef uint32_t PwmPulseConfig_t[PWM_CHANNEL_NUM_MAX] ;
 void pwm_ConfigChannels(uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision);
 
 /*
- * Set pulse durations (in us) the PWM Channels
+ * Set pulse durations (in us) for the PWM Channels
  */
 void pwm_ChannelsSetPulseDurations(PwmPulseConfig_t pwmPulseUsConfig);
 
