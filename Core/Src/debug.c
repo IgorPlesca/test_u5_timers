@@ -7,8 +7,6 @@
 
 #include "debug.h"
 #include "usart.h"
-#include <stdio.h>
-
 
 int _write(int file, char *ptr, int len)
 {

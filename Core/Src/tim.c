@@ -292,6 +292,7 @@ void tim_PwmChannelSetPulse(TimerPwmChanel_t timerPwmChannel, uint32_t pwmPulseU
 	{
 		Error_Handler();
 	}
+
 	sConfigOC.OCMode     = TIM_OCMODE_PWM1;
 	sConfigOC.Pulse      = pwmPulseUs - 1L;
 	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
