@@ -20,6 +20,7 @@
 #include "main.h"
 #include "icache.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -92,6 +93,7 @@ int main(void)
   MX_GPIO_Init();
   MX_ICACHE_Init();
   MX_TIM1_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   /* Config Servo Motors */
   servoMotor_Init(SERVO_MODEL_DM996);

@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "debug.h"
 
 /* Configuration of a servo motor model */
 typedef struct ServoMotorModelConfig_s
@@ -78,6 +79,7 @@ void servoMotor_SetAngles(const ServoMotorAngleConfig_t motorAngleConfig)
 	/* Check if motor number is configured */
 	if(true == m_ServoMotorModelIsConfigured)
 	{
+		debug_print("\nNew Angles (deg) / Pulse duration (us)\n");
 		/* Compute the PWM pulse duration for every configured servo motor */
 		for(ServoMotorNumber_t i=SERVO_MOTOR_1; i<SERVO_MOTOR_NUM_MAX; i++)
 		{
@@ -103,6 +105,8 @@ void servoMotor_SetAngles(const ServoMotorAngleConfig_t motorAngleConfig)
 				/* Angle computation error: put to the minimum angle */
 				pwmPulseUsConfig[i] = servoConfig->pwmPulseUsMin;
 			}
+
+			debug_print("SM%u: A = %6.2f, PD = %4lu\n", (i+1), angleDegrees, pwmPulseUsConfig[i]);
 		}
 
 		/* Set the PWM pulse duration to the configured motors PWM channels */
