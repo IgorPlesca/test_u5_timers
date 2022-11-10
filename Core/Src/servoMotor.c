@@ -18,8 +18,8 @@ typedef struct ServoMotorModelConfig_s
 	uint32_t pwmPulseUsPrecision;   /* PWM pulse duration precision    (in us)      */
 	uint32_t pwmPulseUsMin;         /* PWM pulse minimum duration      (in us)      */
 	uint32_t pwmPulseUsMax;         /* PWM pulse maximum duration      (in us)      */
-	uint16_t angleDegreeMin;        /* Minimum shaft angle             (in degrees) */
-	uint16_t angleDegreeMax;        /* Maximum shaft angle             (in degrees) */
+	float    angleDegreeMin;        /* Minimum shaft angle             (in degrees) */
+	float    angleDegreeMax;        /* Maximum shaft angle             (in degrees) */
 } ServoMotorModelConfig_t;
 
 /* Servo Motor models configurations */
@@ -86,8 +86,8 @@ void servoMotor_SetAngles(const ServoMotorAngleConfig_t motorAngleConfig)
 			float angleDegrees = motorAngleConfig[i];
 
 			/* Check if the selected angle is between the acceptable limits of the selected motor model config. */
-			if( ( angleDegrees >= (float) servoConfig->angleDegreeMin) &&
-			    ( angleDegrees <= (float) servoConfig->angleDegreeMax) )
+			if( ( angleDegrees >= servoConfig->angleDegreeMin) &&
+			    ( angleDegrees <= servoConfig->angleDegreeMax) )
 			{
 				/* Compute the total shaft angle and PWM pulse duration intervals */
 				uint16_t totalAngle   = servoConfig->angleDegreeMax - servoConfig->angleDegreeMin;
