@@ -202,7 +202,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 /*
  * Config the Timer Channel as PWM
  */
-void tim_PwmChannelConfig(TimerPwmChanel_t timerPwmChannel, uint32_t pwmFreqHz, uint32_t pwmPulseUsPrecision)
+void tim_PwmChannelConfig(TimerPwmChanel_t timerPwmChannel, uint32_t pwmFreqHz, uint32_t pwmDeadBandwidth)
 {
 	TIM_HandleTypeDef 		*timHandler;
 	uint32_t           		timChannel;
@@ -216,7 +216,7 @@ void tim_PwmChannelConfig(TimerPwmChanel_t timerPwmChannel, uint32_t pwmFreqHz, 
 	TIM_MasterConfigTypeDef sMasterConfig      = {0};
 
 	timerBusClock = tim_GetTimerBusClock();
-	timerClock    = 1000000uL     / pwmPulseUsPrecision;
+	timerClock    = 1000000uL     / pwmDeadBandwidth;
 	prescaler     = timerBusClock / timerClock;
 	counterPeriod = (timerClock    / pwmFreqHz) - 1uL;
 
